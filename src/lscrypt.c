@@ -1,5 +1,6 @@
 #include <lua.h>
 #include <lauxlib.h>
+#include <string.h>
 #include "scrypt_calibrate.h"
 #include "crypto_scrypt.h"
 

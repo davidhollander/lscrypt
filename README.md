@@ -1,5 +1,8 @@
 lscrypt is a Lua C binding to the scrypt hashing library from [Tarsnap](http://www.tarsnap.com/scrypt.html) with helpers for generating and checking password strings.
 
+##Status
+In development
+
 ##Install
 ###luarocks
 not yet added
