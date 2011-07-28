@@ -1,4 +1,5 @@
-LUA=$(shell lua -e "print(package.path:match(';(.-)?.lua'))")
+LUALIB=$(shell lua -e "print(package.path:match(';(.-)?.lua'))")
+CLIB=$(shell lua -e "print(package.path:match ';([^;]+lib[^?]+)?')")
 
 CC= gcc
 CFLAGS= $(INCS) $(WARN) -O2 -fPIC $G
@@ -15,12 +16,12 @@ test:
 	lua test.lua
 
 install:
-	mkdir -p $(LUA)lscrypt/
-	cp scryptc.so $(LUA)lscrypt/
-	cp lscrypt.lua $(LUA)lscrypt/
+	cp scryptc.so $(CLIB)
+	cp lscrypt.lua $(LUALIB)
 
 uninstall:
-	rm -r $(LUA)lscrypt/
+	rm $(LUALIB)lscrypt.lua
+	rm $(CLIB)scryptc.so
 
 clean:
 	rm *.o *.so
