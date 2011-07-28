@@ -31,7 +31,7 @@ assert(d2>d1, 'Hashing time did not increase when permutations increased')
 
 enc=l.encoder(2048,.5,.2)
 local str = enc 'Hello World'
-assert(str:match '(%d+)%$(%d+)%$(%d+)%$(.+)', 'Encoder returned bad string')
+assert(str:match '%x+%$%x+%$%x+%$', 'Encoder returned bad string')
 
 assert(l.check(str, 'Foo Bar')==false, 'Check should return false for bad password')
 assert(l.check(str, 'Hello World'), 'Check should return true for correct password')

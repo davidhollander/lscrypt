@@ -2,31 +2,25 @@ local lscryptc = require 'scryptc'
 local calibrate = lscryptc.calibrate
 local crypt = lscryptc.crypt
 local ti, tc = table.insert, table.concat
+local rand, floor, char, byte = math.random, math.floor, string.char, string.byte
 
 local M={}
 M.crypt = lscryptc.crypt
 M.calibrate = lscryptc.calibrate
 
----Generate a random salt n bits in length
-local function salt(n) end
+---Convert a random salt n bytes long to hexadecimal
+function salt(n) end
 
-local f = io.open '/dev/urandom'
+urandom = io.open '/dev/urandom'
 
-if f then
-  --salt = function(n) return f:read(math.ceil(n/2)):gsub('.',function(c) return ('%x'):format(string.byte(c)) end):sub(1,n) end
-  salt = function(n) return f:read(n) end
+if urandom then
+  salt = function(n) return urandom:read(n) end
 else
   math.randomseed(os.time())
-  local rand, char = math.random, string.char
   salt = function(n)
     local t={}
-    local m=0
-    repeat
-      local x=('%x'):format(rand(10e10))
-      ti(t, x)
-      m=m+#x
-    until m>=n
-    return tc(t):sub(1,n-m-1)
+    for i=1,n do ti(t, char(rand(255))) end
+    return tc(t)
   end
 end
 
@@ -34,9 +28,9 @@ M.salt = salt
 
 ---Compare a password to a string containing a hash, salt, and cost.
 --@ret true or false
-function M.check(pass, str)
-  local salt, cost, hash = str:match '(%x+)$(%x+$%x+$%x+$)(.+)'
-  return crypt(pass, salt, cost) == hash
+function M.check(str, pass)
+  local cost = str:match '^%x+%$%x+%$%x+%$'
+  return (crypt(pass, str:sub(#cost+1,#cost+32), cost)) == str:sub(#cost+33)
 end
 
 ---Create a password string encoding function
@@ -50,7 +44,7 @@ function M.encoder(maxmem, maxmemfrac, max_time)
   local cost = calibrate(max_mem or 1048576, max_mfrac or .5, max_time or .2)
   return function(pass)
     local s = salt(32)
-    return tc{s,'$',cost,crypt(pass,s,cost)}
+    return tc{cost, s, crypt(pass,s,cost)}
   end
 end
 

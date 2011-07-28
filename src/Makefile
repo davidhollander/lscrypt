@@ -1,6 +1,4 @@
-LUAINC= /usr/include/lua5.1
-LUALIB= /usr/local/lib/lua/5.1
-LUABIN= /usr/bin/
+LUA=$(shell lua -e "print(package.path:match(';(.-)?.lua'))")
 
 CC= gcc
 CFLAGS= $(INCS) $(WARN) -O2 -fPIC $G
@@ -12,6 +10,17 @@ OBJS = crypto_scrypt-ref.o memlimit.o scrypt_calibrate.o lscrypt.o scryptenc_cpu
 
 all: $(OBJS)
 	$(MAKESO) -o scryptc.so $(OBJS) -ldl
+
+test:
+	lua test.lua
+
+install:
+	mkdir -p $(LUA)lscrypt/
+	cp scryptc.so $(LUA)lscrypt/
+	cp lscrypt.lua $(LUA)lscrypt/
+
+uninstall:
+	rm -r $(LUA)lscrypt/
 
 clean:
 	rm *.o *.so
