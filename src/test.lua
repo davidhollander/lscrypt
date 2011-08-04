@@ -35,6 +35,13 @@ assert(str:match '%x+%$%x+%$%x+%$', 'Encoder returned bad string')
 
 assert(l.check(str, 'Foo Bar')==false, 'Check should return false for bad password')
 assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
+assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
 
 print 'passed.'
 return true

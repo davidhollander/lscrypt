@@ -1,18 +1,29 @@
+---lscrypt.lua
+
 local lscryptc = require 'scryptc'
-local calibrate = lscryptc.calibrate
-local crypt = lscryptc.crypt
 local ti, tc = table.insert, table.concat
 local rand, floor, char, byte = math.random, math.floor, string.char, string.byte
+local urandom = io.open '/dev/urandom'
 
-local M={}
-M.crypt = lscryptc.crypt
-M.calibrate = lscryptc.calibrate
+local crypt, calibrate = lscryptc.crypt, lscryptc.calibrate
+local M={crypt=lscryptc.crypt, calibrate=lscryptc.calibrate}
 
----Convert a random salt n bytes long to hexadecimal
-function salt(n) end
+---Outputs a hash using the scrypt key-derivation algorithm
+--@param key string
+--@param salt string
+--@param cost string
+--@function crypt(key, salt, cost)
 
-urandom = io.open '/dev/urandom'
+---Generate a n, r, p cost string based on current system performance
+-- @param maxmem The maximum amount of memory in kilobytes to use during hashing. Never uses less than 1024.
+-- @param maxmemfrac The maximum fraction of available memory to use during hashing. Never uses more than .5.
+-- @param maxtime The maximum time to spend on hashing a password. Default .2 (200ms)
+-- @function calibrate(maxmem, maxmemfrac, maxtime)
 
+---Create random salt, using /dev/urandom if available
+--@param n number of bytes
+--@function salt(n)
+local salt
 if urandom then
   salt = function(n) return urandom:read(n) end
 else
@@ -23,28 +34,33 @@ else
     return tc(t)
   end
 end
-
 M.salt = salt
 
----Compare a password to a string containing a hash, salt, and cost.
---@ret true or false
-function M.check(str, pass)
+---Check if key unlocks a password storage string
+--@param str password storage string containing the hash, salt, and cost.
+--@param key password to validate
+--@return true or false
+function M.check(str, key)
   local cost = str:match '^%x+%$%x+%$%x+%$'
-  return (crypt(pass, str:sub(#cost+1,#cost+32), cost)) == str:sub(#cost+33)
+  print('checkstr', str)
+  print('checkkey', key)
+  print('checkcost', cost)
+  print('checkcrypt', (crypt(key, str:sub(#cost+1,#cost+32), cost)))
+  return (crypt(key, str:sub(#cost+1,#cost+32), cost)) == str:sub(#cost+33)
 end
 
----Create a password string encoding function
--- @param maxmem The maximum amount of memory to use in kilobytes. Never uses less than 1024.
--- @param maxmemfrac: The maximum fraction of available memory to utilize. Never uses more than .5.
--- @param maxtime The maximum time hashing a password should take. Default .2 (200ms)
--- @ret function(pass)
---  - pass: a password
---  - returns: a string containing the hash, salt, and cost.
-function M.encoder(maxmem, maxmemfrac, max_time)
-  local cost = calibrate(max_mem or 1048576, max_mfrac or .5, max_time or .2)
-  return function(pass)
+---Create a function for creating password storage strings
+-- @param maxmem The maximum amount of memory in kilobytes to use during hashing. Never uses less than 1024.
+-- @param maxmemfrac The maximum fraction of available memory to use during hashing. Never uses more than .5.
+-- @param maxtime The maximum time to spend on hashing a password. Default .2 (200ms)
+-- @return function(key)
+--
+--  - Returns a password storage string generated from key
+function M.encoder(maxmem, maxmemfrac, maxtime)
+  local cost = calibrate(maxmem or 1048576, maxmemfrac or .5, maxtime or .2)
+  return function(key)
     local s = salt(32)
-    return tc{cost, s, crypt(pass,s,cost)}
+    return tc{cost, s, crypt(key,s,cost)}
   end
 end
 
