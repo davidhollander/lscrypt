@@ -41,17 +41,8 @@ M.salt = salt
 --@param key password to validate
 --@return true or false
 function M.check(str, key)
-<<<<<<< HEAD
-  local cost = str:match '^%x+%$%x+%$%x+%$'
-  print('checkstr', str)
-  print('checkkey', key)
-  print('checkcost', cost)
-  print('checkcrypt', (crypt(key, str:sub(#cost+1,#cost+32), cost)))
-  return (crypt(key, str:sub(#cost+1,#cost+32), cost)) == str:sub(#cost+33)
-=======
   local a, b, n, r, p = str:find '^(%d+)$(%d+)$(%d+)%$'
   return crypt(key, str:sub(b+1,b+32), n, r, p) == str:sub(b+33,#str)
->>>>>>> 6345132
 end
 
 ---Create a function for creating password storage strings
@@ -62,19 +53,12 @@ end
 --
 --  - Returns a password storage string generated from key
 function M.encoder(maxmem, maxmemfrac, maxtime)
-<<<<<<< HEAD
-  local cost = calibrate(maxmem or 1048576, maxmemfrac or .5, maxtime or .2)
-  return function(key)
-    local s = salt(32)
-    return tc{cost, s, crypt(key,s,cost)}
-=======
   local n, r, p = calibrate(maxmem or 1048576, maxmemfrac or .5, maxtime or .2)
   local cost = ('%d$%d$%d$'):format(n,r,p)
   return function(key)
     local s = salt(32)
     assert(#s==32)
     return tc{cost, s, crypt(key,s,n,r,p)}
->>>>>>> 6345132
   end
 end
 
