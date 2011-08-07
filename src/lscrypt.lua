@@ -26,25 +26,42 @@ end
 
 M.salt = salt
 
----Compare a password to a string containing a hash, salt, and cost.
---@ret true or false
-function M.check(str, pass)
-  local cost = str:match '^%x+%$%x+%$%x+%$'
-  return (crypt(pass, str:sub(#cost+1,#cost+32), cost)) == str:sub(#cost+33)
+---Check if key unlocks a password storage string
+--@param str password storage string containing the hash, salt, and cost.
+--@param key password to validate
+--@return true or false
+function M.check(str, key)
+  local a, b, n, r, p = str:find '^(%d+)$(%d+)$(%d+)%$'
+  print'CHECk'
+  print'checkstr'
+  print(str)
+  --print('checkkey', key)
+  print'checkcost'
+  print(n, r, p)
+  print'checkcrypt'
+  local x = crypt(key, str:sub(b+1,b+32), n, r, p)
+  print(x)
+  print'checkcrypt'
+  local y = str:sub(b+33,#str)
+  print(y)
+  --return (crypt(key, str:sub(b+1,b+32), n, r, p)) == str:sub(b+33)
+  return x==y
 end
 
----Create a password string encoding function
--- @param maxmem The maximum amount of memory to use in kilobytes. Never uses less than 1024.
--- @param maxmemfrac: The maximum fraction of available memory to utilize. Never uses more than .5.
--- @param maxtime The maximum time hashing a password should take. Default .2 (200ms)
--- @ret function(pass)
---  - pass: a password
---  - returns: a string containing the hash, salt, and cost.
-function M.encoder(maxmem, maxmemfrac, max_time)
-  local cost = calibrate(max_mem or 1048576, max_mfrac or .5, max_time or .2)
-  return function(pass)
+---Create a function for creating password storage strings
+-- @param maxmem The maximum amount of memory in kilobytes to use during hashing. Never uses less than 1024.
+-- @param maxmemfrac The maximum fraction of available memory to use during hashing. Never uses more than .5.
+-- @param maxtime The maximum time to spend on hashing a password. Default .2 (200ms)
+-- @return function(key)
+--
+--  - Returns a password storage string generated from key
+function M.encoder(maxmem, maxmemfrac, maxtime)
+  local n, r, p = calibrate(maxmem or 1048576, maxmemfrac or .5, maxtime or .2)
+  local cost = ('%d$%d$%d$'):format(n,r,p)
+  return function(key)
     local s = salt(32)
-    return tc{cost, s, crypt(pass,s,cost)}
+    assert(#s==32)
+    return tc{cost, s, crypt(key,s,n,r,p)}
   end
 end
 
