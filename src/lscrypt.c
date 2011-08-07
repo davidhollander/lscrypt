@@ -15,27 +15,23 @@ static int lscrypt_calibrate(lua_State *L) {
 	uint32_t p = 0;
 	if (calibrate( mm, mf, mt, & n, & r, & p ) == 0)
 	{
-		char cost_str[36];
-		memset( cost_str, '\0', 36 );
-		sprintf( cost_str, "%llx$%x$%x$", n, r, p );
-		lua_pushstring(L, cost_str);
+		lua_pushnumber(L, n);
+		lua_pushnumber(L, r);
+		lua_pushnumber(L, p);
+		return 3;
 	}
-	return 1;
+	return luaL_error(L, "error");
 }
 
 static int lscrypt_crypt(lua_State *L) {
 	const char * key = luaL_checkstring(L, 1);
 	const char * salt = luaL_checkstring(L, 2);
-	const char * cost = luaL_checkstring(L, 3);
-
+	uint64_t n = luaL_checknumber(L, 3);
+	uint32_t r = luaL_checknumber(L, 4);
+	uint32_t p = luaL_checknumber(L, 5);
+		
 	const size_t buffer_size = 256;
-	char buffer[buffer_size];
-	memset( buffer, '\0', buffer_size );
-
-	uint64_t n = 0;
-	uint32_t r = 0;
-	uint32_t p = 0;
-	sscanf( cost, "%llx$%x$%x$", & n, & r, & p );
+	char buffer[256];
 
 	int result = crypto_scrypt(
 		(uint8_t *) key, strlen(key),
@@ -46,7 +42,7 @@ static int lscrypt_crypt(lua_State *L) {
 
 	if (result == 0)
 	{
-		lua_pushstring(L, buffer);
+		lua_pushlstring(L, buffer, buffer_size);
 		return 1;
 	}
 	return luaL_error(L, "error %d \n", result );
