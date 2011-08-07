@@ -29,7 +29,7 @@ static int lscrypt_crypt(lua_State *L) {
 	uint64_t n = luaL_checknumber(L, 3);
 	uint32_t r = luaL_checknumber(L, 4);
 	uint32_t p = luaL_checknumber(L, 5);
-	
+		
 	const size_t buffer_size = 256;
 	char buffer[256];
 
@@ -42,7 +42,7 @@ static int lscrypt_crypt(lua_State *L) {
 
 	if (result == 0)
 	{
-		lua_pushstring(L, buffer);
+		lua_pushlstring(L, buffer, buffer_size);
 		return 1;
 	}
 	return luaL_error(L, "error %d \n", result );

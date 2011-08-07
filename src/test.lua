@@ -28,7 +28,9 @@ local str = enc 'Hello World'
 assert(str:match '%x+%$%x+%$%x+%$', 'Encoder returned bad string')
 
 assert(l.check(str, 'Foo Bar')==false, 'Check should return false for bad password')
-for i=1,100 do
+print 'check'
+for i=1,20 do
+  print(i)
   assert(l.check(str, 'Hello World'), 'Check should return true for correct password')
 end
 print 'passed.'

@@ -32,20 +32,7 @@ M.salt = salt
 --@return true or false
 function M.check(str, key)
   local a, b, n, r, p = str:find '^(%d+)$(%d+)$(%d+)%$'
-  print'CHECk'
-  print'checkstr'
-  print(str)
-  --print('checkkey', key)
-  print'checkcost'
-  print(n, r, p)
-  print'checkcrypt'
-  local x = crypt(key, str:sub(b+1,b+32), n, r, p)
-  print(x)
-  print'checkcrypt'
-  local y = str:sub(b+33,#str)
-  print(y)
-  --return (crypt(key, str:sub(b+1,b+32), n, r, p)) == str:sub(b+33)
-  return x==y
+  return crypt(key, str:sub(b+1,b+32), n, r, p) == str:sub(b+33,#str)
 end
 
 ---Create a function for creating password storage strings
