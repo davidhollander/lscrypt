@@ -11,13 +11,16 @@ local M={crypt=lscryptc.crypt, calibrate=lscryptc.calibrate}
 ---Outputs a hash using the scrypt key-derivation algorithm
 --@param key string
 --@param salt string
---@param cost string
+--@param n cost parameter
+--@param r cost parameter
+--@param p cost parameter
 --@function crypt(key, salt, cost)
 
----Generate a n, r, p cost string based on current system performance
+---Generate a n, r, p cost numbers based on current system performance
 -- @param maxmem The maximum amount of memory in kilobytes to use during hashing. Never uses less than 1024.
 -- @param maxmemfrac The maximum fraction of available memory to use during hashing. Never uses more than .5.
 -- @param maxtime The maximum time to spend on hashing a password. Default .2 (200ms)
+-- @return n, r, p
 -- @function calibrate(maxmem, maxmemfrac, maxtime)
 
 ---Create random salt, using /dev/urandom if available

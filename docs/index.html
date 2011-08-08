@@ -50,12 +50,12 @@
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#crypt">crypt&nbsp;(key, salt, cost)</a></td>
+	<td class="name" nowrap><a href="#crypt">crypt&nbsp;(key, salt, n, r, p)</a></td>
 	<td class="summary">Outputs a hash using the scrypt key-derivation algorithm</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#calibrate">calibrate&nbsp;(maxmem, maxmemfrac, maxtime)</a></td>
-	<td class="summary">Generate a n, r, p cost string based on current system performance</td>
+	<td class="summary">Generate a n, r, p cost numbers based on current system performance</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#salt">salt&nbsp;(n)</a></td>
@@ -80,7 +80,7 @@
     <dl class="function">
     <dt>
     <a name = "crypt"></a>
-    <strong>crypt&nbsp;(key, salt, cost)</strong>
+    <strong>crypt&nbsp;(key, salt, n, r, p)</strong>
     </dt>
     <dd>
     Outputs a hash using the scrypt key-derivation algorithm
@@ -90,7 +90,9 @@
     <ul>
        <li><code><em>key</em></code>:  string</li>
        <li><code><em>salt</em></code>:  string</li>
-       <li><code><em>cost</em></code>:  string</li>
+       <li><code><em>n</em></code>:  cost parameter</li>
+       <li><code><em>r</em></code>:  cost parameter</li>
+       <li><code><em>p</em></code>:  cost parameter</li>
     </ul>
 
 
@@ -101,7 +103,7 @@
     <strong>calibrate&nbsp;(maxmem, maxmemfrac, maxtime)</strong>
     </dt>
     <dd>
-    Generate a n, r, p cost string based on current system performance
+    Generate a n, r, p cost numbers based on current system performance
     
 
     <h3>Parameters:</h3>
@@ -112,6 +114,10 @@
     </ul>
 
 
+    <h3>Returns:</h3>
+    <ol>
+        n, r, p
+    </ol>
 
 </dd>
     <dt>
